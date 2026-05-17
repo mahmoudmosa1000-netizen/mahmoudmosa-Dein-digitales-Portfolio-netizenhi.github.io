@@ -67,7 +67,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;over
 .l-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fu .8s .36s var(--t) both}
 
 /* Terminal intro */
-.term-intro{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mint);opacity:.7;white-space:nowrap;animation:fu 1s .8s var(--t) both}
+.term-intro{position:absolute;bottom:40px;left:50%;margin-bottom:28px;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mint);opacity:.7;white-space:nowrap;animation:fu 1s .8s var(--t) both}
 .term-cursor-blink{display:inline-block;width:7px;height:13px;background:var(--mint);margin-left:2px;animation:blink 1s step-end infinite;vertical-align:bottom}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
