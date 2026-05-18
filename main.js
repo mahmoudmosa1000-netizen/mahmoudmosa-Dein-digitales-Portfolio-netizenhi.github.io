@@ -973,22 +973,33 @@ function buildPortfolio(full) {
     }).join('');
   }
 
-  // Projects HTML
+  // Projects HTML — rebuilt: direct onclick on card, no <a> wrapper
+  // Root cause of old bug: <a target="_blank"> inside srcdoc iframe was intercepted
+  // by a try/catch that silently swallowed window.top.open() failures, so clicks
+  // did nothing. Fix: call window.open() directly from onclick (trusted user gesture,
+  // not blocked by popup blockers, works in both preview iframe and exported HTML).
   var projHTML = D.projects.map(function (p, i) {
     var tech = (p.tech || '').split(',').filter(Boolean).map(function (t) {
       return '<span class="p-tech">' + t.trim() + '</span>';
     }).join('');
-    var projUrl = p.url ? 'https://' + p.url.replace(/^https?:\/\//, '') : '';
-    var inner = '<div class="proj-card reveal" style="animation-delay:' + (.12 * i).toFixed(2) + 's">' +
-      '<div class="proj-num">0' + (i + 1) + '</div><div class="proj-body">' +
-      '<div class="proj-name">' + p.name + (projUrl ? ' <span style="font-size:12px;opacity:.5">\u2197</span>' : '') + '</div>' +
-      '<div class="proj-desc">' + p.desc + '</div>' +
+    var rawUrl = (p.url || '').trim();
+    var projUrl = rawUrl ? 'https://' + rawUrl.replace(/^https?:\/\//i, '') : '';
+    // Escape single quotes in the URL to safely embed in onclick attribute
+    var safeUrl = projUrl.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    var clickable = projUrl
+      ? ' onclick="window.open(\'' + safeUrl + '\',\'_blank\',\'noopener,noreferrer\')"' +
+        ' role="link" tabindex="0" aria-label="' + (p.name || 'Projekt').replace(/"/g, '&quot;') + ' \u00f6ffnen"'
+      : '';
+    return '<div class="proj-card reveal"' + clickable +
+      ' style="animation-delay:' + (.12 * i).toFixed(2) + 's' + (projUrl ? ';cursor:pointer' : '') + '">' +
+      '<div class="proj-num">0' + (i + 1) + '</div>' +
+      '<div class="proj-body">' +
+      '<div class="proj-name">' + (p.name || '') + (projUrl ? ' <span style="font-size:12px;opacity:.5">\u2197</span>' : '') + '</div>' +
+      '<div class="proj-desc">' + (p.desc || '') + '</div>' +
       '<div class="proj-tech">' + tech + '</div>' +
-      (projUrl ? '<span class="proj-link">\u2192 ' + p.url + '</span>' : '') +
+      (projUrl ? '<a class="proj-link" href="' + projUrl + '" target="_blank" rel="noopener noreferrer"' +
+        ' onclick="event.stopPropagation()">\u2192 ' + rawUrl + '</a>' : '') +
       '</div></div>';
-    return projUrl
-      ? '<a href="' + projUrl + '" target="_blank" rel="noopener" style="text-decoration:none;display:block;color:inherit">' + inner + '</a>'
-      : inner;
   }).join('');
 
   // Experience & Education
@@ -1276,6 +1287,12 @@ function buildPortfolio(full) {
     (curAnim === 'terminal' ? animJS : '') +
     // Hero name JS (typewriter, blur-focus, scramble)
     heroNameJS +
+    // Keyboard support for proj-cards (onclick divs need Enter/Space to be accessible)
+    'document.querySelectorAll(".proj-card[onclick]").forEach(function(c){' +
+    'c.addEventListener("keydown",function(e){' +
+    'if(e.key==="Enter"||e.key===" "){e.preventDefault();this.click();}' +
+    '});' +
+    '});' +
     '<\/script></body></html>';
 }
 
