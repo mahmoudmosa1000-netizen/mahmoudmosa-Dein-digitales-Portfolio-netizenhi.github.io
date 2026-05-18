@@ -32,7 +32,7 @@
   <div class="land">
     <div class="l-tag">Portfolio Builder · 2026 · IT Edition</div>
     <h1 class="l-h1">Dein digitales Portfolio.<em> revolutionär gedacht.</em></h1>
-    <p class="l-sub">Kein langweiliger Lebenslauf. Ein animiertes Portfolio,wirklich beeindruckend — mit Terminal-Animationen &amp; vollständiger Personalisierung.</p>
+    <p class="l-sub">Kein langweiliger Lebenslauf. Ein animiertes Portfolio, wirklich beeindruckend — mit Terminal-Animationen &amp; vollständiger Personalisierung.</p>
     <div class="l-cta">
       <button class="btn btn-g" onclick="startBuild()">Portfolio erstellen &nbsp;→</button>
       <button class="btn btn-o" onclick="loadDemoData()">Demo ansehen</button>
@@ -118,6 +118,20 @@
   <div class="step" id="step1">
     <div class="sttl">Deine Identität</div>
     <p class="stsub">Name, Titel und deine Geschichte — der erste Eindruck zählt.</p>
+
+    <!-- Foto-Upload -->
+    <div class="fld" style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div id="photoRing" onclick="document.getElementById('photoInp').click()" style="width:72px;height:72px;border-radius:50%;border:2px dashed var(--hr);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;flex-shrink:0;color:var(--text2);transition:border-color .2s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--hr)')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:6px">Profilfoto (optional)</div>
+        <button class="btn btn-o btn-s" onclick="document.getElementById('photoInp').click()">Foto wählen</button>
+        <button class="btn btn-o btn-s" id="photoClearBtn" onclick="clearPhoto()" style="display:none;margin-left:6px;color:#ef4444;border-color:#ef4444">✕ Entfernen</button>
+      </div>
+      <input type="file" id="photoInp" style="display:none" accept="image/*" onchange="photoSet(event)">
+    </div>
+
     <div class="f2">
       <div class="fld"><label>Vorname *</label><input id="i-fn" placeholder="Max" oninput="liveRender()"></div>
       <div class="fld"><label>Nachname *</label><input id="i-ln" placeholder="Mustermann" oninput="liveRender()"></div>

@@ -978,12 +978,17 @@ function buildPortfolio(full) {
     var tech = (p.tech || '').split(',').filter(Boolean).map(function (t) {
       return '<span class="p-tech">' + t.trim() + '</span>';
     }).join('');
-    return '<div class="proj-card reveal" style="animation-delay:' + (.12 * i).toFixed(2) + 's" onclick="toggleProj(this)">' +
+    var projUrl = p.url ? 'https://' + p.url.replace(/^https?:\/\//, '') : '';
+    var inner = '<div class="proj-card reveal" style="animation-delay:' + (.12 * i).toFixed(2) + 's">' +
       '<div class="proj-num">0' + (i + 1) + '</div><div class="proj-body">' +
-      '<div class="proj-name">' + p.name + '</div><div class="proj-desc">' + p.desc + '</div>' +
+      '<div class="proj-name">' + p.name + (projUrl ? ' <span style="font-size:12px;opacity:.5">\u2197</span>' : '') + '</div>' +
+      '<div class="proj-desc">' + p.desc + '</div>' +
       '<div class="proj-tech">' + tech + '</div>' +
-      (p.url ? '<a class="proj-link" href="https://' + p.url.replace(/^https?:\/\//, '') + '" target="_blank" onclick="event.stopPropagation()">→ ' + p.url + '</a>' : '') +
+      (projUrl ? '<span class="proj-link">\u2192 ' + p.url + '</span>' : '') +
       '</div></div>';
+    return projUrl
+      ? '<a href="' + projUrl + '" target="_blank" rel="noopener" style="text-decoration:none;display:block;color:inherit">' + inner + '</a>'
+      : inner;
   }).join('');
 
   // Experience & Education
@@ -1091,6 +1096,14 @@ function buildPortfolio(full) {
     heroNameCSS += '.hero-name .last{color:' + ac + ';display:block}.hero-name span{display:block;overflow:hidden}.hero-name span span{display:block;animation:slideUp .7s cubic-bezier(.4,0,.2,1) both}';
   }
 
+  // Final color values — must be defined BEFORE sectionBorderTop uses them
+  var finalBg = isDark ? c.bg : '#f4f1ec';
+  var finalText = isDark ? c.text : '#0d0d12';
+  var finalText2 = isDark ? c.text2 : '#5a5248';
+  var finalHr = isDark ? c.hr : 'rgba(13,13,18,.08)';
+  var finalBg2 = isDark ? c.bg2 : '#ebe6dd';
+  var finalBg3 = isDark ? c.bg3 : '#ddd8ce';
+
   // Section divider CSS
   var sectionBorderTop = 'border-top:1px solid ' + finalHr;
   if (sectionDivider === 'gradient') {
@@ -1105,13 +1118,6 @@ function buildPortfolio(full) {
   var modeVars = isDark ?
     '--bg:' + c.bg + ';--bg2:' + c.bg2 + ';--bg3:' + c.bg3 + ';--text:' + c.text + ';--text2:' + c.text2 + ';--hr:' + c.hr :
     '--bg:#f4f1ec;--bg2:#ebe6dd;--bg3:#ddd8ce;--text:#0d0d12;--text2:#5a5248;--hr:rgba(13,13,18,.08)';
-  // For light override
-  var finalBg = isDark ? c.bg : '#f4f1ec';
-  var finalText = isDark ? c.text : '#0d0d12';
-  var finalText2 = isDark ? c.text2 : '#5a5248';
-  var finalHr = isDark ? c.hr : 'rgba(13,13,18,.08)';
-  var finalBg2 = isDark ? c.bg2 : '#ebe6dd';
-  var finalBg3 = isDark ? c.bg3 : '#ddd8ce';
 
   return '<!DOCTYPE html><html lang="de" data-mode="' + (isDark ? 'dark' : 'light') + '"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + name + '</title>' +
     '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">' +
@@ -1213,11 +1219,11 @@ function buildPortfolio(full) {
 
     // Nav
     '<nav><div class="nav-logo">' + name + '</div><div class="nav-links">' +
-    (D.bio ? '<a href="#about">Über mich</a>' : '') +
-    (allSkills.length ? '<a href="#skills">Skills</a>' : '') +
-    (D.projects.length ? '<a href="#projekte">Projekte</a>' : '') +
-    (D.experience.length || D.education.length ? '<a href="#karriere">Karriere</a>' : '') +
-    (contacts.length ? '<a href="#kontakt">Kontakt</a>' : '') +
+    (D.bio ? '<a href="#sec-about">Über mich</a>' : '') +
+    (allSkills.length ? '<a href="#sec-skills">Skills</a>' : '') +
+    (D.projects.length ? '<a href="#sec-projekte">Projekte</a>' : '') +
+    (D.experience.length || D.education.length ? '<a href="#sec-karriere">Karriere</a>' : '') +
+    (contacts.length ? '<a href="#sec-kontakt">Kontakt</a>' : '') +
     '</div></nav>' +
 
     // Dot nav
@@ -1260,7 +1266,7 @@ function buildPortfolio(full) {
     // JS
     '<script>' +
     // Cursor
-    (cursorType !== 'none' ? '(function(){var cur=document.getElementById("cur"),ring=document.getElementById("cring"),mx=0,my=0,rx=0,ry=0;document.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;cur.style.left=mx-(cursorType==="crosshair"?10:4)+"px";cur.style.top=my-(cursorType==="crosshair"?10:4)+"px"});function animRing(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;if(ring){ring.style.left=rx-16+"px";ring.style.top=ry-16+"px"}requestAnimationFrame(animRing)}animRing();document.querySelectorAll("a,button").forEach(function(el){el.addEventListener("mouseenter",function(){cur.style.transform="scale(2.5)"});el.addEventListener("mouseleave",function(){cur.style.transform=""})});})();' : ''.replace('cursorType', cursorType)) +
+    (cursorType !== 'none' ? '(function(){var cur=document.getElementById("cur"),ring=document.getElementById("cring"),mx=0,my=0,rx=0,ry=0;document.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;cur.style.left=mx-' + (cursorType === 'crosshair' ? 10 : 4) + '+"px";cur.style.top=my-' + (cursorType === 'crosshair' ? 10 : 4) + '+"px"});function animRing(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;if(ring){ring.style.left=rx-16+"px";ring.style.top=ry-16+"px"}requestAnimationFrame(animRing)}animRing();document.querySelectorAll("a,button").forEach(function(el){el.addEventListener("mouseenter",function(){cur.style.transform="scale(2.5)"});el.addEventListener("mouseleave",function(){cur.style.transform=""})});})();' : '') +
     // Scroll reveal + optional stagger
     '(function(){var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){' +
     (staggerOn ? 'var idx=Array.from(e.target.parentNode.children).indexOf(e.target);e.target.style.transitionDelay=(idx*0.07)+"s";' : '') + 'e.target.classList.add("vis")}})},{threshold:.08});document.querySelectorAll(".reveal").forEach(function(el){obs.observe(el)});})();' +
@@ -1270,8 +1276,6 @@ function buildPortfolio(full) {
     (curAnim === 'terminal' ? animJS : '') +
     // Hero name JS (typewriter, blur-focus, scramble)
     heroNameJS +
-    // Project toggle
-    'function toggleProj(el){el.classList.toggle("open")}' +
     '<\/script></body></html>';
 }
 
